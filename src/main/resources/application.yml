@@ -1,0 +1,22 @@
+server:
+  port: 9091
+  jackson:
+    data-formate: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/love?serUnicode=true&characterEncoding=utf8&useTimezone=true&serverTimezone=GMT%2b8
+    username: root
+    password: root
+
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml  #扫描mybatis
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

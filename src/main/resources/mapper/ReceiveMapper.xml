@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hy.demo.mapper.ReceiveMapper">
+
+    <select id="findReceivePage" resultType="com.hy.demo.vo.ReceiveDto">
+        select r.*,u.uname,g.gname from receive r
+        left join user u
+        on r.uid=u.uid
+        left join goods g
+        on r.gid=g.gid
+        <where>
+            <if test="uname !=null and uname !=''">
+                and  u.uname like concat('%', #{uname} ,'%')
+            </if>
+            <if test="gid !=null and gid !=''">
+                and g.gid=#{gid}
+            </if>
+            <if test="rnumber !=null and rnumber !=''">
+                and r.runmber=#{rnumber}
+            </if>
+        </where>
+
+
+    </select>
+
+
+</mapper>
