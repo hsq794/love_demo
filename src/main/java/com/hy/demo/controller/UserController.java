@@ -8,10 +8,14 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hy.demo.common.GlobalConstant;
 import com.hy.demo.entity.User;
 import com.hy.demo.service.UserService;
+import com.hy.demo.util.RedisUtils;
 import com.hy.demo.util.Result;
 import com.hy.demo.vo.UserDto;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -29,6 +34,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @GetMapping("/userListPage")
     public Result findUserList( @RequestParam Integer pageNum,
@@ -82,6 +90,7 @@ public class UserController {
 
         boolean b = userService.removeById(id);
         if(b){
+            redisUtils.del(GlobalConstant.REDIS_KEY_TOKEN+id);
             return Result.success();
         }else{
             return Result.error("300","操作失败!");
@@ -93,6 +102,12 @@ public class UserController {
     public Result delBatchUser(@RequestBody List<Integer> ids){
         try{
             userService.removeBatchByIds(ids);
+            List<String> objects = new ArrayList<>();
+            for(Integer id:ids){
+                redisUtils.del(GlobalConstant.REDIS_KEY_TOKEN+id);
+
+            }
+
             return Result.success();
         }catch (Exception e){
             return Result.error("300","操作失败!");
@@ -141,9 +156,9 @@ public class UserController {
     }
 
     /**
-     * Excel导入
+     * Excel导入 方法一
      */
-    @PostMapping("/import")
+    //@PostMapping("/import")
     public Result userImport(MultipartFile file) throws Exception{
         System.out.println(file.toString());
         //InputStream inputStream = multipartFile.getInputStream();
@@ -168,11 +183,21 @@ public class UserController {
         return Result.success();
     }
 
+    /**
+     * Excel导入  方法2
+     */
+    @PostMapping("/import")
+    public Result userImport2(@RequestParam("file") MultipartFile file) throws Exception{
+        Result result=userService.userImportExcel(file);
+        return result;
+    }
+
+
 
     /**
-     * Excel导出
+     * Excel导出 方法一
      */
-    @GetMapping("/export")
+    //@GetMapping("/export")
     public Result userExport(HttpServletResponse response) throws Exception{
         //查询全部的用户数据
         List<User> list = userService.list();
@@ -198,6 +223,18 @@ public class UserController {
         outputStream.close();
         writer.close();
         return Result.success();
+    }
+
+    /**
+     * 导出 方法二
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/export")
+    public Result userExport2(HttpServletResponse response) throws Exception{
+        Result result=userService.userExportExcel(response);
+        return result;
     }
 
 }

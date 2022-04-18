@@ -6,12 +6,14 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.hy.demo.common.GlobalConstant;
 import com.hy.demo.config.AuthAccess;
 import com.hy.demo.entity.User;
 import com.hy.demo.exception.ServiceException;
 import com.hy.demo.entity.Controller;
 import com.hy.demo.service.ControllerService;
 import com.hy.demo.service.UserService;
+import com.hy.demo.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -27,6 +29,8 @@ public class JwtInterceptor  implements HandlerInterceptor {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisUtils redisUtils;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("token");
@@ -50,16 +54,18 @@ public class JwtInterceptor  implements HandlerInterceptor {
             throw new ServiceException("402", "无token，请重新登录");
         }
         // 获取 token 中的 user id
-        String userId;
+        String userId = null;
         try {
             userId = JWT.decode(token).getAudience().get(0);
         } catch (JWTDecodeException j) {
+            redisUtils.del(GlobalConstant.REDIS_KEY_TOKEN+userId);
             throw new ServiceException("402", "token验证失败，请重新登录");
         }
         // 根据token中的controllerid查询数据库
        // Controller controller = controllerService.getById(userId);
         User user = userService.getById(userId);
         if (user == null) {
+            redisUtils.del(GlobalConstant.REDIS_KEY_TOKEN+userId);
             throw new ServiceException("402", "用户不存在，请重新登录");
         }
         // 用户密码加签验证 token
@@ -67,6 +73,11 @@ public class JwtInterceptor  implements HandlerInterceptor {
         try {
             jwtVerifier.verify(token); // 验证token
         } catch (JWTVerificationException e) {
+            //token时间过期
+            //可以继续token连续续命2个小时
+
+
+
             throw new ServiceException("402","token验证失败，请重新登录");
         }
         return true;
