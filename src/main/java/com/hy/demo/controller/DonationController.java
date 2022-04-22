@@ -1,6 +1,7 @@
 package com.hy.demo.controller;
 
 
+import com.hy.demo.config.SystemControllerLog;
 import com.hy.demo.service.impl.DonationServiceImpl;
 import com.hy.demo.util.Result;
 import com.hy.demo.vo.DonationDto;
@@ -18,6 +19,7 @@ public class DonationController {
     private DonationServiceImpl donationService;
 
     @GetMapping("/donationListPage")
+    @SystemControllerLog(operate = "捐赠信息查询",module = "捐赠管理")
     public Result findUserList(@RequestParam Integer pageNum,
                                @RequestParam Integer pageSize,
                                @RequestParam String uid,
@@ -30,12 +32,14 @@ public class DonationController {
     }
 
     @PostMapping("/addOrUpdate")
+    @SystemControllerLog(operate = "捐赠信息添加或修改",module = "捐赠管理")
     public Result addOrUpdateUser(@RequestBody DonationDto donationDto) throws ParseException {
         Result result=donationService.addOrUpdateUser(donationDto);
         return result;
     }
 
     @DeleteMapping("/del/{id}")
+    @SystemControllerLog(operate = "捐赠信息删除",module = "捐赠管理")
     public Result delUser(@PathVariable Integer id){
         boolean b = donationService.removeById(id);
         if(b){

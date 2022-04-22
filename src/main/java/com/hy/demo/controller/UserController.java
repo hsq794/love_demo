@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hy.demo.common.GlobalConstant;
+import com.hy.demo.config.SystemControllerLog;
 import com.hy.demo.entity.User;
 import com.hy.demo.service.UserService;
 import com.hy.demo.util.RedisUtils;
@@ -39,6 +40,7 @@ public class UserController {
     private RedisUtils redisUtils;
 
     @GetMapping("/userListPage")
+    @SystemControllerLog(operate = "用户查询",module = "用户管理")
     public Result findUserList( @RequestParam Integer pageNum,
                                 @RequestParam Integer pageSize,
                                 @RequestParam String username,
@@ -63,6 +65,7 @@ public class UserController {
     }
 
     @PostMapping("/addOrUpdate")
+    @SystemControllerLog(operate = "用户修改或者添加",module = "用户管理")
     public Result addOrUpdateUser(@RequestBody User user){
 
         try {
@@ -86,6 +89,7 @@ public class UserController {
     }
 
     @DeleteMapping("/del/{id}")
+    @SystemControllerLog(operate = "用户删除",module = "用户管理")
     public Result delUser(@PathVariable Integer id){
 
         boolean b = userService.removeById(id);
@@ -99,6 +103,7 @@ public class UserController {
     }
 
     @PostMapping("/del/batch")
+    @SystemControllerLog(operate = "用户大批量删除",module = "用户管理")
     public Result delBatchUser(@RequestBody List<Integer> ids){
         try{
             userService.removeBatchByIds(ids);
@@ -148,6 +153,7 @@ public class UserController {
     }
 
     @GetMapping("/uid/{id}")
+    @SystemControllerLog(operate = "用户ID查询",module = "用户管理")
     public Result selectById(@PathVariable Integer id){
         QueryWrapper<User> controllerQueryWrapper = new QueryWrapper<>();
         controllerQueryWrapper.eq("uid",id);

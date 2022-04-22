@@ -1,5 +1,6 @@
 package com.hy.demo.controller;
 
+import com.hy.demo.config.SystemControllerLog;
 import com.hy.demo.service.ReceiveService;
 import com.hy.demo.util.Result;
 import com.hy.demo.vo.ReceiveDto;
@@ -16,6 +17,7 @@ public class ReceiveController {
 
 
     @GetMapping("/receiveListPage")
+    @SystemControllerLog(operate = "获赠信息查询",module = "获赠管理")
     public Result findUserList(@RequestParam Integer pageNum,
                                @RequestParam Integer pageSize,
                                @RequestParam String uid,
@@ -28,6 +30,7 @@ public class ReceiveController {
     }
 
     @PostMapping("/addOrUpdate")
+    @SystemControllerLog(operate = "获赠信息添加或者修改",module = "获赠管理")
     public Result addOrUpdateUser(@RequestBody ReceiveDto receiveDto) throws Exception {
         try {
             Result result=receiveService.addOrUpdateUser(receiveDto);
@@ -42,6 +45,7 @@ public class ReceiveController {
     }
 
     @DeleteMapping("/del/{id}")
+    @SystemControllerLog(operate = "获赠信息删除",module = "获赠管理")
     public Result delUser(@PathVariable Integer id) throws Exception{
         boolean b = receiveService.removeById(id);
         if(b){
