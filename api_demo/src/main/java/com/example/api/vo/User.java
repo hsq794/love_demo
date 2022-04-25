@@ -1,7 +1,7 @@
-package com.hy.demo.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+package com.example.api.vo;
+//
+//import com.baomidou.mybatisplus.annotation.IdType;
+//import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
 
-    @TableId(value = "uid", type = IdType.AUTO)
+    //@TableId(value = "uid", type = IdType.AUTO)
     private Integer uid;
 
     private String uname;
@@ -27,4 +27,7 @@ public class User {
     private String uaddress;
 
     private String role;
+
+
+
 }

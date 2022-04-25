@@ -1,5 +1,8 @@
 package com.hy.demo;
 
+import com.hy.demo.entity.User;
+import com.hy.demo.util.*;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +20,55 @@ class LoveApplicationTests {
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
 
+    @Autowired
+    private RestTemplateToInterface restTemplateToInterface;
+
     @Test
     void contextLoads() {
     }
+
+    @Test
+    public void testApi() {
+        //测试get方法
+        String s = HttpClientUtil.doGet("http://localhost:9092/api/getHello", "UTF-8");
+        System.out.println("get方法:"+s);
+        //测试post方法
+        User user = new User();
+        user.setUname("胡萝卜");
+        user.setRole("普通用户");
+        JSONObject jsonObject = new JSONObject();
+        String s1 = JsonUtil.toJson(user);
+        jsonObject.put("param",s1);
+        String postString = HttpClientUtil.doPost("http://localhost:9092/api/postHello", jsonObject);
+        System.out.println("post方法:"+postString);
+    }
+
+    @Test
+    public void testJDKApi(){
+        //测试get方法
+        String s = HttpClientUtil2.doGet("http://localhost:9092/api/getHello");
+        System.out.println("get方法:"+s);
+        //测试post方法
+        User user = new User();
+        user.setUname("胡萝卜");
+        user.setRole("普通用户");
+        String s1 = JsonUtil.toJson(user);
+        String postString = HttpClientUtil2.doPost("http://localhost:9092/api/postHello",s1);
+        System.out.println("post方法:"+postString);
+    }
+
+    @Test
+    public void testSpringBootApi(){
+        Result result= restTemplateToInterface.doGetWith1("http://localhost:9092/api/getHello");
+        System.out.println("get结果："+result);
+        User user = new User();
+        user.setUname("胡萝卜");
+        user.setRole("普通用户");
+        String s = restTemplateToInterface.doPostWith1("http://localhost:9092/api/postHello", user);
+        System.out.println("post结果："+s);
+    }
+
+
     @Test
     public void testString(){
         //操作String类型的数据
